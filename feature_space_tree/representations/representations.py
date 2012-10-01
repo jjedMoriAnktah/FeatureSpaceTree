@@ -133,7 +133,7 @@ class Util(object):
 
     @staticmethod
     def configure_categorized_corpus(corpus_path,
-                                     user_corpus_path=r'~/nltk_data/corpora/(.*/.*)',
+                                     user_corpus_path=r'/home/aplm/nltk_data/corpora/(.*/.*)',
                                      files_pattern=r'.+/.+',
                                      categories_pattern=r'(.+)/.+'):
 
@@ -318,7 +318,7 @@ class Corpus(object):
     def __init__(self,
                  categories,
                  corpus_path,
-                 user_corpus_path=r'~/nltk_data/corpora/(.*/.*)',
+                 user_corpus_path=r'/home/aplm/nltk_data/corpora/(.*/.*)',
                  files_pattern=r'.+/.+',
                  categories_pattern=r'(.+)/.+'):
 
@@ -357,7 +357,7 @@ class CorpusCategorized(Corpus):
     def __init__(self,
                  categories,
                  corpus_path,
-                 user_corpus_path=r'~/nltk_data/corpora/(.*/.*)',
+                 user_corpus_path=r'/home/aplm/nltk_data/corpora/(.*/.*)',
                  files_pattern=r'.+/.+',
                  categories_pattern=r'(.+)/.+'):
 
