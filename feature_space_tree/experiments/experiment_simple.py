@@ -46,6 +46,7 @@ python experiment_simple.py /somewhere/my_args.yaml
 import time
 import yaml
 import sys
+import shutil
 print sys.path
 
 from ..representations import representations
@@ -126,6 +127,8 @@ def main_function():
     # a python dictionary.
     global_kwargs_list = yaml.load(stream)
     # DEBUG: print global_kwargs_list
+
+    shutil.copyfile(experiment_config_path, global_kwargs_list['experiment_base_path'])
 
     # extrac just the necessary (at least for this framework) from the
     # yaml args dictionary.
