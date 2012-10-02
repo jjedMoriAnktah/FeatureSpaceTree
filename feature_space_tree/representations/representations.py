@@ -219,8 +219,11 @@ class Util(object):
             # the last good: list_string_row = ['%.8f' % e for e in row]
             # the last good: list_string_row = ', '.join(list_string_row)
             list_string_row = ""
-            for e in row:
-                list_string_row += str(e) + ", "
+
+            list_string_row = str(row)[1:-1]
+
+#            for e in row:
+#                list_string_row += str(e) + ", "
 
             name_file = "_".join(c.findall(name_file))
 
