@@ -128,7 +128,7 @@ def main_function():
     global_kwargs_list = yaml.load(stream)
     # DEBUG: print global_kwargs_list
 
-    shutil.copyfile(experiment_config_path, global_kwargs_list['experiment_base_path'])
+    shutil.copyfile(experiment_config_path, global_kwargs_list['config_base']['experiment_base_path'])
 
     # extrac just the necessary (at least for this framework) from the
     # yaml args dictionary.
