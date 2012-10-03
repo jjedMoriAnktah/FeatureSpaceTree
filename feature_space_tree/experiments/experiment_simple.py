@@ -47,7 +47,7 @@ import time
 import yaml
 import sys
 import shutil
-print sys.path
+#print sys.path
 
 from ..representations import representations
 from ..representations.representations import bcolors
@@ -128,7 +128,10 @@ def main_function():
     global_kwargs_list = yaml.load(stream)
     # DEBUG: print global_kwargs_list
 
-    shutil.copyfile(experiment_config_path, global_kwargs_list['config_base']['experiment_base_path'])
+    print "1: " + experiment_config_path
+    print "2: " + global_kwargs_list['config_base']['experiment_base_path']
+    shutil.copyfile(experiment_config_path,
+                    global_kwargs_list['config_base']['experiment_base_path'])
 
     # extrac just the necessary (at least for this framework) from the
     # yaml args dictionary.
