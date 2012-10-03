@@ -129,11 +129,6 @@ def main_function():
     global_kwargs_list = yaml.load(stream)
     # DEBUG: print global_kwargs_list
 
-    print "arguments in: " + experiment_config_path
-    print "backed up in: " + global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1)
-    shutil.copyfile(experiment_config_path,
-                    global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1))
-
     # extrac just the necessary (at least for this framework) from the
     # yaml args dictionary.
     config_base = representations.ConfigBaseAdvanced(global_kwargs_list['config_base'],
@@ -247,7 +242,10 @@ def main_function():
                            config_base.global_kwargs_list)
     #===========================================================================
 
-
+    print "arguments in: " + experiment_config_path
+    print "backed up in: " + global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1)
+    shutil.copyfile(experiment_config_path,
+                    global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1))
 
     t2 = time.time()
     print representations.Util.get_string_fancy_time(t2 - t1,
