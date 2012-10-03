@@ -47,6 +47,7 @@ import time
 import yaml
 import sys
 import shutil
+import re
 #print sys.path
 
 from ..representations import representations
@@ -128,10 +129,10 @@ def main_function():
     global_kwargs_list = yaml.load(stream)
     # DEBUG: print global_kwargs_list
 
-    print "1: " + experiment_config_path
-    print "2: " + global_kwargs_list['config_base']['experiment_base_path']
+    print "arguments in: " + experiment_config_path
+    print "backed up in: " + global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1)
     shutil.copyfile(experiment_config_path,
-                    global_kwargs_list['config_base']['experiment_base_path'])
+                    global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1))
 
     # extrac just the necessary (at least for this framework) from the
     # yaml args dictionary.
