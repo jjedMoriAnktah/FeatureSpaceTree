@@ -215,7 +215,7 @@ class Util(object):
 #            row = matrix[i]
 #            category_of_file = categories_of_files[i]
 #            name_file = name_files[i]
-        numpy.set_printoptions(threshold='nan')
+        numpy.set_printoptions(precision=4, threshold='nan')
         
         f_arff = open(path, 'a')
         for (row,
@@ -228,10 +228,10 @@ class Util(object):
             # the last good: list_string_row = ', '.join(list_string_row)
             list_string_row = ""
 
-            list_string_row = str(row)[1:-1]
+            #list_string_row = str(row)[1:-1]
 
-#            for e in row:
-#                list_string_row += str(e) + ", "
+            for e in row:
+                list_string_row += str(e) + ", "
 
             # name_file = "_".join(c.findall(name_file))
 
@@ -240,7 +240,7 @@ class Util(object):
             # the last good: string_arff += ('%s, %-25s %s\n' % (list_string_row, category_of_file, name_file))
             # the last good: string_arff += ('%s %-25s %s\n' % (list_string_row, category_of_file, name_file))
             
-            f_arff.write((list_string_row + ", " + category_of_file + "    " + "\n").encode('utf-8'))
+            f_arff.write((list_string_row + " " + category_of_file + "    " + "\n").encode('utf-8'))
         
         f_arff.close()
 
