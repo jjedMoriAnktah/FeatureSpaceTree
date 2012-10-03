@@ -233,14 +233,14 @@ class Util(object):
             for e in row:
                 list_string_row += str(e) + ", "
 
-            # name_file = "_".join(c.findall(name_file))
+            name_file = "_".join(c.findall(name_file))
 
             # the last good: name_file = "_".join(re.findall('[a-zA-Z0-9]+',name_file))
 
             # the last good: string_arff += ('%s, %-25s %s\n' % (list_string_row, category_of_file, name_file))
             # the last good: string_arff += ('%s %-25s %s\n' % (list_string_row, category_of_file, name_file))
             
-            f_arff.write((list_string_row + " " + category_of_file + "    " + "\n").encode('utf-8'))
+            f_arff.write((list_string_row + " " + category_of_file + "    " + name_file + "\n").encode('utf-8'))
         
         f_arff.close()
 
