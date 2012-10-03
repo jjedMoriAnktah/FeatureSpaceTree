@@ -209,6 +209,7 @@ class Util(object):
 #            row = matrix[i]
 #            category_of_file = categories_of_files[i]
 #            name_file = name_files[i]
+        numpy.set_printoptions(threshold='nan')
 
         for (row,
              category_of_file,
