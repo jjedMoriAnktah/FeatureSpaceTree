@@ -194,6 +194,12 @@ class Util(object):
 
         string_arff += ("@attribute categories {%s}\n" % str_categories)
         string_arff += ("@data\n")
+        
+        
+        f_arff = open(path, 'w')
+        f_arff.write(string_arff.encode('utf-8'))
+        f_arff.close()
+        
 
         categories_of_files = [re.match('(.+)/.+', name_file).group(1)
                                for name_file in name_files ]
@@ -210,7 +216,8 @@ class Util(object):
 #            category_of_file = categories_of_files[i]
 #            name_file = name_files[i]
         numpy.set_printoptions(threshold='nan')
-
+        
+        f_arff = open(path, 'a')
         for (row,
              category_of_file,
              name_file) in zip(matrix,
@@ -226,16 +233,21 @@ class Util(object):
 #            for e in row:
 #                list_string_row += str(e) + ", "
 
-            name_file = "_".join(c.findall(name_file))
+            # name_file = "_".join(c.findall(name_file))
 
             # the last good: name_file = "_".join(re.findall('[a-zA-Z0-9]+',name_file))
 
             # the last good: string_arff += ('%s, %-25s %s\n' % (list_string_row, category_of_file, name_file))
-            string_arff += ('%s %-25s %s\n' % (list_string_row, category_of_file, name_file))
-
-        f_arff = open(path, 'w')
-        f_arff.write(string_arff.encode('utf-8'))
+            # the last good: string_arff += ('%s %-25s %s\n' % (list_string_row, category_of_file, name_file))
+            
+            f_arff.write((list_string_row + ", " + category_of_file + "    " + "\n").encode('utf-8'))
+        
         f_arff.close()
+
+# the last good:
+#        f_arff = open(path, 'w')
+#        f_arff.write(string_arff.encode('utf-8'))
+#        f_arff.close()
 
     @staticmethod
     def write_dict(path, attributes, categories, matrix, name_files, relation_name="my_relation"):
