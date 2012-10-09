@@ -37,51 +37,6 @@ import nltk
 from abc import ABCMeta, abstractmethod
 
 
-class EnumFiltersVocabulary(object):
-
-    (FIXED_TOP,
-     PERCENTAGE_TOP,
-     BIAS_FREQ,
-     FIXED_RAND,
-     PERCENTAGE_RAND,
-     TRANSPARENT) = range(6)
-
-
-class FactoryFilterVocabulary(object):
-
-    __metaclass__ = ABCMeta
-
-    def build(self, option, kwargs, vocabulary_object):
-        option = eval(option)
-        return self.create(option, kwargs, vocabulary_object)
-
-    @abstractmethod
-    def create(self, option, kwargs, vocabulary_object):
-        pass
-
-
-class FactorySimpleFilterVocabulary(FactoryFilterVocabulary):
-
-    def create(self, option, kwargs, vocabulary_object):
-        if option == EnumFiltersVocabulary.FIXED_TOP:
-            return FixedTopVocabulary(vocabulary_object, kwargs["fixed_top"])
-
-        if option == EnumFiltersVocabulary.PERCENTAGE_TOP:
-            return PercentageTopVocabulary(vocabulary_object, kwargs["percentage_top"])
-
-        if option == EnumFiltersVocabulary.BIAS_FREQ:
-            return BiasFreqVocabulary(vocabulary_object, kwargs["bias_freq"])
-
-        if option == EnumFiltersVocabulary.FIXED_RAND:
-            return FixedRandomVocabulary(vocabulary_object, kwargs["n_terms"], kwargs["caos"])
-
-        if option == EnumFiltersVocabulary.PERCENTAGE_RAND:
-            return PercentageRandomVocabulary(vocabulary_object, kwargs["percentage"], kwargs["caos"])
-
-        if option == EnumFiltersVocabulary.TRANSPARENT:
-            return FilterVocabulary(vocabulary_object)
-
-
 class Vocabulary(object):
 
     def __init__(self, fdist):
@@ -254,45 +209,10 @@ class PercentageRandomVocabulary(FilterVocabulary):
             new_fdist_selected[token] = old_fdist_selected[token]
 
         return new_fdist_selected
+    
+    
+# ==============================================================================    
 
-
-class EnumFiltersTermsList(object):
-
-    (FIXED_TOP,
-     PERCENTAGE_TOP,
-     BIAS_FREQ,
-     FIXED_RAND,
-     PERCENTAGE_RAND,
-     ORDER,
-     TRANSPARENT) = range(7)
-
-
-class FactorySimpleFilterTermsList(object):
-
-    @staticmethod
-    def create(option, kwargs, terms_list):
-
-        option = eval (option)
-        if option == EnumFiltersTermsList.FIXED_TOP:
-            return FixedTopTermsList(terms_list, kwargs["fixed_top"])
-
-        if option == EnumFiltersTermsList.PERCENTAGE_TOP:
-            return PercentageTopTermsList(terms_list, kwargs["percentage_top"])
-
-        if option == EnumFiltersTermsList.BIAS_FREQ:
-            return BiasFreqTermsList(terms_list, kwargs["bias_freq"])
-
-        if option == EnumFiltersTermsList.FIXED_RAND:
-            return FixedRandomTermsList(terms_list, kwargs["n_terms"], kwargs["caos"])
-
-        if option == EnumFiltersTermsList.PERCENTAGE_RAND:
-            return PercentageRandomTermsList(terms_list, kwargs["percentage"], kwargs["caos"])
-
-        if option == EnumFiltersTermsList.ORDER:
-            return OrderTermsList(terms_list)
-
-        if option == EnumFiltersTermsList.TRANSPARENT:
-            return TransparentTermsList(terms_list)
 
 
 class TermsList(object):

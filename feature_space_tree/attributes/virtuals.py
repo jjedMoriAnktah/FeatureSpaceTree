@@ -34,8 +34,9 @@
 import nltk
 from abc import ABCMeta, abstractmethod
 
-from ..attributes.attr import FactoryTermLex
-from ..attributes.filters_terms import TermsListRaw, FactorySimpleFilterVocabulary, FactorySimpleFilterTermsList, VocabularyRaw
+from ..attributes.attr_config import FactoryTermLex
+from ..attributes.filters_terms_config import FactorySimpleFilterVocabulary, FactorySimpleFilterTermsList
+from ..attributes.filters_terms import TermsListRaw, VocabularyRaw
 
 class Util(object):
 

@@ -42,7 +42,7 @@ import nltk
 from nltk.corpus.reader.plaintext import CategorizedPlaintextCorpusReader
 from nltk.corpus.util import LazyCorpusLoader
 
-from ..attributes import attr
+from ..attributes.attr_config import FactoryTermLex
 from ..attributes import virtuals
 from _pyio import __metaclass__
 from aptsources.distinfo import Template
@@ -597,7 +597,7 @@ class VirtualCategoriesHolder(object):
 #            f_tokens.close()
 
     def getValidTokens(self, kwargs_term, vocabulary):
-        factory_term_lex = attr.FactoryTermLex()
+        factory_term_lex = FactoryTermLex()
         valid_tokens = []
 
         term = factory_term_lex.build_tokens(kwargs_term['type_term'], kwargs_term)
