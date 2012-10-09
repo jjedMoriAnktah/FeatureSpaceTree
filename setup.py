@@ -55,6 +55,6 @@ setup(name='FeatureSpaceTree',
       ],
       entry_points="""
       [console_scripts]
-      fst_experiment = feature_space_tree.experiments.experiment_simple:main_function
+      simple_exp = feature_space_tree.experiments.experiment_simple:main_function
       """
       )

@@ -1,36 +1,6 @@
-#!/usr/local/bin/python
-# coding: utf-8
-
-# Copyright (C) 2011-2012 FeatureSpaceTree Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# ==============================================================================
-# FeatureSpaceTree: Attributes module
-#
-# Author: Adrian Pastor Lopez-Monroy <pastor@ccc.inaoep.mx>
-# URL: <https://github.com/beiceman/FeatureSpaceTree>
-#
-# Language Technologies Lab,
-# Department of Computer Science,
-# Instituto Nacional de Astrofísica, Óptica y Electrónica
-#
-# For license information, see:
-#  * The header of this file
-#  * The LICENSE.TXT included in the project dir
-# ==============================================================================
-
+from abc import ABCMeta, abstractmethod
 from attr import *
+
 
 class EnumTermLex(object):
     (REG_EXP,
@@ -103,6 +73,7 @@ class FactoryTermLex(FactoryTerm):
 
         elif option == EnumTermLex.TRIGRAM:
             return TermTrigram(kwargs)
+        
         elif option == EnumTermLex.BIGRAM_STYLE_POS:
             return TermBigramStylePOS(kwargs)
 
@@ -163,8 +134,8 @@ class FactoryTermLex(FactoryTerm):
         #elif option == EnumTermLex.SFM:
         #    return TermSFM(kwargs[0])
 
-        elif option == EnumTermLex.MERGED:
-            tokens = Util.get_merged_tokens(kwargs)
+        #elif option == EnumTermLex.MERGED:
+        #    tokens = Util.get_merged_tokens(kwargs)
 
             #tokens = (Tokens(kwargs, TermPuntc()).tokens +
             #          Tokens(kwargs, TermWordLenght()).tokens +
@@ -179,4 +150,4 @@ class FactoryTermLex(FactoryTerm):
                     #Tokens(kwargs, TermTrigramCollocationStop()).tokens
             #        )
             # print "THE TOKENS: " + str(tokens)
-            return Merged(tokens)
+        #    return Merged(tokens)    

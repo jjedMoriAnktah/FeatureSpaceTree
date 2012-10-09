@@ -114,7 +114,7 @@ def recursive_build(id_space,
 
     return space_component
 
-def experiment_simple():
+def main_function():
 
     # FIXME: Here we are missing a validation for the arguments ...
 

@@ -1,33 +1,3 @@
-# Copyright (C) 2011-2012 FeatureSpaceTree Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# ==============================================================================
-# FeatureSpaceTree: Modes module
-#
-# Author: Adrian Pastor Lopez-Monroy <pastor@ccc.inaoep.mx>
-# URL: <https://github.com/beiceman/FeatureSpaceTree>
-#
-# Language Technologies Lab,
-# Department of Computer Science,
-# Instituto Nacional de Astrofísica, Óptica y Electrónica
-#
-# For license information, see:
-#  * The header of this file
-#  * The LICENSE.TXT included in the project dir
-# ==============================================================================
-
-
 #===============================================================================
 # Modes are Templates to choose how the terms will be calculated. The ModeCorpus
 # receive the object corpus in kwargs["corpus"] and a list of files(can be a
@@ -36,12 +6,17 @@
 #===============================================================================
 
 import shelve
-from prefilter import *
-from postfilter import *
-from modes_config import EnumModes
-from nltk.corpus.reader.plaintext import CategorizedPlaintextCorpusReader
-
+import re
 from nltk.corpus.util import LazyCorpusLoader
+from nltk.corpus.reader.plaintext import CategorizedPlaintextCorpusReader
+from nltk.corpus.reader.tagged import CategorizedTaggedCorpusReader
+from mode_options import EnumModes
+
+from prefilter import EmptyRawStringNormalizer
+from postfilter import EmptyByTokenNormalizer
+import prefilter_config
+import postfilter_config
+
 
 class ModeCorpus(object):
 
@@ -77,7 +52,7 @@ class ModeCorpus(object):
 
                 if 'raw_string_normalizers' in terms.kwargs:
                     empty_raw_string_normalizer = \
-                    Util.decorate_raw_string(empty_raw_string_normalizer,
+                    prefilter_config.Util.decorate_raw_string(empty_raw_string_normalizer,
                                              terms.kwargs['raw_string_normalizers'])
 
                 terms.kwargs["string"] = empty_raw_string_normalizer.get_raw_string()
@@ -92,7 +67,7 @@ class ModeCorpus(object):
 
                 if 'by_token_normalizers' in terms.kwargs:
                     empty_by_token_normalizer = \
-                    Util.decorate_by_token_normalizer(empty_by_token_normalizer,
+                    postfilter_config.Util.decorate_by_token_normalizer(empty_by_token_normalizer,
                                                       terms.kwargs['by_token_normalizers'])
 
                 temp_tokens = empty_by_token_normalizer.get_list_of_tokens()
@@ -378,3 +353,4 @@ class ModeWeightAuthorCollocationPOS(object):
 
 
 # ==============================================================================
+
