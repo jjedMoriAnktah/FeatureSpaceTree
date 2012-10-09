@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # ==============================================================================
-# FeatureSpaceTree: Attributes module
+# FeatureSpaceTree: Prefilter module
 #
 # Author: Adrian Pastor Lopez-Monroy <pastor@ccc.inaoep.mx>
 # URL: <https://github.com/beiceman/FeatureSpaceTree>

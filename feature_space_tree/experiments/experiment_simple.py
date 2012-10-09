@@ -114,7 +114,7 @@ def recursive_build(id_space,
 
     return space_component
 
-def main_function():
+def experiment_simple():
 
     # FIXME: Here we are missing a validation for the arguments ...
 
@@ -251,9 +251,9 @@ def main_function():
     print representations.Util.get_string_fancy_time(t2 - t1,
                                                      'End of the principal script')
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
 
-    main_function()
+#    main_function()
 
 
 
