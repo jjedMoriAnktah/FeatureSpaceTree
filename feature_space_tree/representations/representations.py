@@ -250,6 +250,90 @@ class Util(object):
 #        f_arff.close()
 
     @staticmethod
+    def write_svmlib(path, attributes, categories, matrix, name_files, relation_name="my_relation"):
+        '''
+        This creates a arrf header string ready to be written into a weka's arff file
+        '''       
+        categories_of_files = []
+        set_of_classes = []
+        for name_file in name_files:
+            class_name = re.match('(.+)/.+', name_file).group(1)
+            categories_of_files += [class_name]
+            
+            if class_name not in set_of_classes:
+                set_of_classes += [class_name]
+            
+        k = 1    
+        for e in set_of_classes:
+            
+            i = 0
+            for class_n in categories_of_files:
+                
+                if class_n == e:
+                    
+                    categories_of_files[i] = k
+                    
+                i += 1
+                    
+            
+            k += 1
+                    
+#        categories_of_files = [re.match('(.+)/.+', name_file).group(1)
+#                               for name_file in name_files ]
+        
+        
+        
+        
+
+        #categories_of_files = [re.match(".+_.+_.+_(.+)_.+", name_file).group(1)
+        #                       for name_file in name_files ]
+        c = re.compile('[a-zA-Z0-9]+')
+
+# this is not faster!!!
+#        i = 0
+#        for i in range(len(name_files)):
+#
+#            row = matrix[i]
+#            category_of_file = categories_of_files[i]
+#            name_file = name_files[i]
+        numpy.set_printoptions(precision=4, threshold='nan')
+        
+        f_arff = open(path, 'a')
+        for (row,
+             category_of_file,
+             name_file) in zip(matrix,
+                               categories_of_files,
+                               name_files):
+
+            # the last good: list_string_row = ['%.8f' % e for e in row]
+            # the last good: list_string_row = ', '.join(list_string_row)
+            list_string_row = ""
+
+            #list_string_row = str(row)[1:-1]
+            
+            n = 1
+            for e in row:
+                list_string_row += str(n) + ":" + str(e) + " "
+                n += 1
+                
+            
+            name_file = "_".join(c.findall(name_file))
+
+            # the last good: name_file = "_".join(re.findall('[a-zA-Z0-9]+',name_file))
+
+            # the last good: string_arff += ('%s, %-25s %s\n' % (list_string_row, category_of_file, name_file))
+            # the last good: string_arff += ('%s %-25s %s\n' % (list_string_row, category_of_file, name_file))
+            
+            f_arff.write((category_of_file + " " + list_string_row + "\n").encode('utf-8'))
+        
+        f_arff.close()
+
+# the last good:
+#        f_arff = open(path, 'w')
+#        f_arff.write(string_arff.encode('utf-8'))
+#        f_arff.close()
+
+    @staticmethod
     def write_dict(path, attributes, categories, matrix, name_files, relation_name="my_relation"):
         '''
         This creates a arrf header string ready to be written into a weka's arff file
@@ -298,6 +382,8 @@ class Util(object):
         list_of_files = []
         for line in f:
             list_of_files += [line.strip()]
+            
+        f.close()
 
         return list_of_files
 
@@ -474,6 +560,7 @@ class FullFilesCorpus(FilterCorpus):
             docs += author_file_list
 
         docs.sort()
+        print docs
         return docs
 
 

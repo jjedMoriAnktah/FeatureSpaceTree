@@ -49,6 +49,7 @@ from nltk.corpus.reader.tagged import CategorizedTaggedCorpusReader
 from nltk.corpus.util import LazyCorpusLoader
 
 from attr_util import Util
+from attr_util import RegExps
 
 from abc import ABCMeta, abstractmethod
 from nltk.tag import StanfordTagger
@@ -364,7 +365,6 @@ class TermSentLenght(Terms):
     def calc_terms(self):
         return Util.calc_sent_lenght(self.kwargs["string"],
                                      self.kwargs["regexp"],
-                                     self.kwargs["boolStem"],
                                      self.kwargs["template"])#"sentToken{len:%s}"
 
 
@@ -376,8 +376,7 @@ class TermSentStopsLenght(Terms):
 
     def calc_terms(self):
         return Util.calc_sent_stopwords_lenght(self.kwargs["string"],
-                                               RegExps.W_H_C,
-                                               self.kwargs["boolStem"])
+                                               RegExps.W_H_C)
 
 
 class TermSentNOStopsLenght(Terms):
@@ -388,8 +387,7 @@ class TermSentNOStopsLenght(Terms):
 
     def calc_terms(self):
         return Util.calc_sent_nostopwords_lenght(self.kwargs["string"],
-                                                 RegExps.W_H_C,
-                                                 self.kwargs["boolStem"])
+                                                 RegExps.W_H_C)
 
 
 class TermBigramStop(Terms):
@@ -562,299 +560,7 @@ class TermRegExpIgnore(Terms):
 
 # -----------------------------------------------------------------------------
 
-#===============================================================================
 
-
-class RegExps(object):
-
-    W_H_C = r"[a-zA-Z']+-*[a-zA-Z']+"         # Words_Hyphens_Contractions
-    PUNTC = r"[.]+|[,$?:;!()&%#=+{}*~.]+"
-    STOPW = '''(?x)
-            a|able|about|above|abst|accordance|according|accordingly|across|
-            act|actually|added|adj|adopted|affected|affecting|affects|after|
-            afterwards|again|against|ah|all|almost|alone|along|already|also|
-            although|always|am|among|amongst|an|and|announce|another|any|
-            anybody|anyhow|anymore|anyone|anything|anyway|anyways|anywhere|
-            apparently|approximately|are|aren|arent|arise|around|as|aside|ask|
-            asking|at|auth|available|away|awfully|back|be|became|because|become|
-            becomes|becoming|been|before|beforehand|begin|beginning|beginnings|
-            begins|behind|being|believe|below|beside|besides|between|beyond|
-            biol|both|brief|briefly|but|by|ca|came|can|cannot|can't|cause|
-            causes|certain|certainly|co|com|come|comes|contain|containing|
-            contains|could|couldnt|date|did|didn't|different|do|does|doesn't|
-            doing|done|don't|down|downwards|due|during|each|ed|edu|effect|eg|
-            eight|eighty|either|else|elsewhere|end|ending|enough|especially|et|
-            etc|even|ever|every|everybody|everyone|everything|everywhere|ex|
-            except|far|few|ff|fifth|first|five|fix|followed|following|follows|
-            for|former|formerly|forth|found|four|from|further|furthermore|gave|
-            get|gets|getting|give|given|gives|giving|go|goes|gone|got|gotten|
-            had|happens|hardly|has|hasn't|have|haven't|having|he|hed|hence|her|
-            here|hereafter|hereby|herein|heres|hereupon|hers|herself|hes|hi|
-            hid|him|himself|his|hither|home|how|howbeit|however|hundred|id|ie|
-            if|i'll|im|immediate|immediately|importance|important|in|inc|
-            indeed|index|information|instead|into|invention|inward|is|isn't|it|
-            itd|it'll|its|itself|i've|just|keep|keeps|kept|keys|kg|km|know|
-            known|knows|largely|last|lately|later|latter|latterly|least|less|
-            lest|let|lets|like|liked|likely|line|little|'ll|look|looking|looks|
-            ltd|made|mainly|make|makes|many|may|maybe|me|mean|means|meantime|
-            meanwhile|merely|mg|might|million|miss|ml|more|moreover|most|
-            mostly|mr|mrs|much|mug|must|my|myself|na|name|namely|nay|nd|near|
-            nearly|necessarily|necessary|need|needs|neither|never|nevertheless|
-            new|next|nine|ninety|no|nobody|non|none|nonetheless|noone|nor|
-            normally|nos|not|noted|nothing|now|nowhere|obtain|obtained|
-            obviously|of|off|often|oh|ok|okay|old|omitted|on|once|one|ones|only|
-            onto|or|ord|other|others|otherwise|ought|our|ours|ourselves|out|
-            outside|over|overall|owing|own|page|pages|part|particular|
-            particularly|past|per|perhaps|placed|please|plus|poorly|possible|
-            possibly|potentially|pp|predominantly|present|previously|primarily|
-            probably|promptly|proud|provides|put|que|quickly|quite|qv|ran|
-            rather|rd|re|readily|really|recent|recently|ref|refs|regarding|
-            regardless|regards|related|relatively|research|respectively|
-            resulted|resulting|results|right|run|said|same|saw|say|saying|says|
-            sec|section|see|seeing|seem|seemed|seeming|seems|seen|self|selves|
-            sent|seven|several|shall|she|shed|she'll|shes|should|shouldn't|show|
-            showed|shown|showns|shows|significant|significantly|similar|
-            similarly|since|six|slightly|so|some|somebody|somehow|someone|
-            somethan|something|sometime|sometimes|somewhat|somewhere|soon|sorry|
-            specifically|specified|specify|specifying|state|states|still|stop|
-            strongly|sub|substantially|successfully|such|sufficiently|suggest|
-            sup|sure|take|taken|taking|tell|tends|th|than|thank|thanks|thanx|
-            that|that'll|thats|that've|the|their|theirs|them|themselves|then|
-            thence|there|thereafter|thereby|thered|therefore|therein|there'll|
-            thereof|therere|theres|thereto|thereupon|there've|these|they|theyd|
-            they'll|theyre|they've|think|this|those|thou|though|thoughh|
-            thousand|throug|through|throughout|thru|thus|til|tip|to|together|
-            too|took|toward|towards|tried|tries|truly|try|trying|ts|twice|two|
-            un|under|unfortunately|unless|unlike|unlikely|until|unto|up|upon|
-            ups|us|use|used|useful|usefully|usefulness|uses|using|usually|
-            value|various|'ve|very|via|viz|vol|vols|vs|want|wants|was|wasn't|
-            way|we|wed|welcome|we'll|went|were|weren't|we've|what|whatever|
-            what'll|whats|when|whence|whenever|where|whereafter|whereas|
-            whereby|wherein|wheres|whereupon|wherever|whether|which|while|whim|
-            whither|who|whod|whoever|whole|who'll|whom|whomever|whos|whose|why|
-            widely|willing|wish|with|within|without|won't|words|world|would|
-            wouldn't|www|yes|yet|you|youd|you'll|your|youre|yours|yourself|
-            yourselves|you've|zero'''
-
-    STOPW_PUNTC = '''(?x)
-            a|able|about|above|abst|accordance|according|accordingly|across|
-            act|actually|added|adj|adopted|affected|affecting|affects|after|
-            afterwards|again|against|ah|all|almost|alone|along|already|also|
-            although|always|am|among|amongst|an|and|announce|another|any|
-            anybody|anyhow|anymore|anyone|anything|anyway|anyways|anywhere|
-            apparently|approximately|are|aren|arent|arise|around|as|aside|ask|
-            asking|at|auth|available|away|awfully|back|be|became|because|become|
-            becomes|becoming|been|before|beforehand|begin|beginning|beginnings|
-            begins|behind|being|believe|below|beside|besides|between|beyond|
-            biol|both|brief|briefly|but|by|ca|came|can|cannot|can't|cause|
-            causes|certain|certainly|co|com|come|comes|contain|containing|
-            contains|could|couldnt|date|did|didn't|different|do|does|doesn't|
-            doing|done|don't|down|downwards|due|during|each|ed|edu|effect|eg|
-            eight|eighty|either|else|elsewhere|end|ending|enough|especially|et|
-            etc|even|ever|every|everybody|everyone|everything|everywhere|ex|
-            except|far|few|ff|fifth|first|five|fix|followed|following|follows|
-            for|former|formerly|forth|found|four|from|further|furthermore|gave|
-            get|gets|getting|give|given|gives|giving|go|goes|gone|got|gotten|
-            had|happens|hardly|has|hasn't|have|haven't|having|he|hed|hence|her|
-            here|hereafter|hereby|herein|heres|hereupon|hers|herself|hes|hi|
-            hid|him|himself|his|hither|home|how|howbeit|however|hundred|id|ie|
-            if|i'll|im|immediate|immediately|importance|important|in|inc|
-            indeed|index|information|instead|into|invention|inward|is|isn't|it|
-            itd|it'll|its|itself|i've|just|keep|keeps|kept|keys|kg|km|know|
-            known|knows|largely|last|lately|later|latter|latterly|least|less|
-            lest|let|lets|like|liked|likely|line|little|'ll|look|looking|looks|
-            ltd|made|mainly|make|makes|many|may|maybe|me|mean|means|meantime|
-            meanwhile|merely|mg|might|million|miss|ml|more|moreover|most|
-            mostly|mr|mrs|much|mug|must|my|myself|na|name|namely|nay|nd|near|
-            nearly|necessarily|necessary|need|needs|neither|never|nevertheless|
-            new|next|nine|ninety|no|nobody|non|none|nonetheless|noone|nor|
-            normally|nos|not|noted|nothing|now|nowhere|obtain|obtained|
-            obviously|of|off|often|oh|ok|okay|old|omitted|on|once|one|ones|only|
-            onto|or|ord|other|others|otherwise|ought|our|ours|ourselves|out|
-            outside|over|overall|owing|own|page|pages|part|particular|
-            particularly|past|per|perhaps|placed|please|plus|poorly|possible|
-            possibly|potentially|pp|predominantly|present|previously|primarily|
-            probably|promptly|proud|provides|put|que|quickly|quite|qv|ran|
-            rather|rd|re|readily|really|recent|recently|ref|refs|regarding|
-            regardless|regards|related|relatively|research|respectively|
-            resulted|resulting|results|right|run|said|same|saw|say|saying|says|
-            sec|section|see|seeing|seem|seemed|seeming|seems|seen|self|selves|
-            sent|seven|several|shall|she|shed|she'll|shes|should|shouldn't|show|
-            showed|shown|showns|shows|significant|significantly|similar|
-            similarly|since|six|slightly|so|some|somebody|somehow|someone|
-            somethan|something|sometime|sometimes|somewhat|somewhere|soon|sorry|
-            specifically|specified|specify|specifying|state|states|still|stop|
-            strongly|sub|substantially|successfully|such|sufficiently|suggest|
-            sup|sure|take|taken|taking|tell|tends|th|than|thank|thanks|thanx|
-            that|that'll|thats|that've|the|their|theirs|them|themselves|then|
-            thence|there|thereafter|thereby|thered|therefore|therein|there'll|
-            thereof|therere|theres|thereto|thereupon|there've|these|they|theyd|
-            they'll|theyre|they've|think|this|those|thou|though|thoughh|
-            thousand|throug|through|throughout|thru|thus|til|tip|to|together|
-            too|took|toward|towards|tried|tries|truly|try|trying|ts|twice|two|
-            un|under|unfortunately|unless|unlike|unlikely|until|unto|up|upon|
-            ups|us|use|used|useful|usefully|usefulness|uses|using|usually|
-            value|various|'ve|very|via|viz|vol|vols|vs|want|wants|was|wasn't|
-            way|we|wed|welcome|we'll|went|were|weren't|we've|what|whatever|
-            what'll|whats|when|whence|whenever|where|whereafter|whereas|
-            whereby|wherein|wheres|whereupon|wherever|whether|which|while|whim|
-            whither|who|whod|whoever|whole|who'll|whom|whomever|whos|whose|why|
-            widely|willing|wish|with|within|without|won't|words|world|would|
-            wouldn't|www|yes|yet|you|youd|you'll|your|youre|yours|yourself|
-            yourselves|you've|zero|[.]+|[-,$?:;!()&%#=+{}*~.]+'''
-
-    STOPW_ES = '''(?x)
-            de|la|que|el|en|y|a|los|del|se|las|por|un|para|con|no|una|su|al|lo|
-            como|más|pero|sus|le|ya|o|este|sí|porque|esta|entre|cuando|muy|sin|
-            sobre|también|me|hasta|hay|donde|quien|desde|todo|nos|durante|todos|
-            uno|les|ni|contra|otros|ese|eso|ante|ellos|e|esto|mí|antes|algunos|
-            qué|unos|yo|otro|otras|otra|él|tanto|esa|estos|mucho|quienes|nada|
-            muchos|cual|poco|ella|estar|estas|algunas|algo|nosotros|mi|mis|tú|
-            te|ti|tu|tus|ellas|nosotras|vosostros|vosostras|os|mío|mía|míos|mías
-            |tuyo|tuya|tuyos|tuyas|suyo|suya|suyos|suyas|nuestro|nuestra|
-            nuestros|nuestras|vuestro|vuestra|vuestros|vuestras|esos|esas|estoy|
-            estás|está|estamos|estáis|están|esté|estés|estemos|estéis|estén|
-            estaré|estarás|estará|estaremos|estaréis|estarán|estaría|estarías|
-            estaríamos|estaríais|estarían|estaba|estabas|estábamos|estabais|
-            estaban|estuve|estuviste|estuvo|estuvimos|estuvisteis|estuvieron|
-            estuviera|estuvieras|estuviéramos|estuvierais|estuvieran|estuviese|
-            estuvieses|estuviésemos|estuvieseis|estuviesen|estando|estado|
-            estada|estados|estadas|estad|he|has|ha|hemos|habéis|han|haya|hayas|
-            hayamos|hayáis|hayan|habré|habrás|habrá|habremos|habréis|habrán|
-            habría|habrías|habríamos|habríais|habrían|había|habías|habíamos|
-            habíais|habían|hube|hubiste|hubo|hubimos|hubisteis|hubieron|hubiera|
-            hubieras|hubiéramos|hubierais|hubieran|hubiese|hubieses|hubiésemos|
-            hubieseis|hubiesen|habiendo|habido|habida|habidos|habidas|soy|eres|
-            es|somos|sois|son|sea|seas|seamos|seáis|sean|seré|serás|será|
-            seremos|seréis|serán|sería|serías|seríamos|seríais|serían|era|eras|
-            éramos|erais|eran|fui|fuiste|fue|fuimos|fuisteis|fueron|fuera|fueras|
-            fuéramos|fuerais|fueran|fuese|fueses|fuésemos|fueseis|fuesen|
-            sintiendo|sentido|sentida|sentidos|sentidas|siente|sentid|tengo|
-            tienes|tiene|tenemos|tenéis|tienen|tenga|tengas|tengamos|tengáis|
-            tengan|tendré|tendrás|tendrá|tendremos|tendréis|tendrán|tendría|
-            tendrías|tendríamos|tendríais|tendrían|tenía|tenías|teníamos|
-            teníais|tenían|tuve|tuviste|tuvo|tuvimos|tuvisteis|tuvieron|tuviera|
-            tuvieras|tuviéramos|tuvierais|tuvieran|tuviese|tuvieses|tuviésemos|
-            tuvieseis|tuviesen|teniendo|tenido|tenida|tenidos|tenidas|tened'''
-
-    STYLE_POS = r"cc|cd|dt|ex|fw|in|jj|jjr|jjs|ls|md|pdt|pos|prp|prp$|rb|rbr|rbs|rp|sym|to|uh|vb|vbd|vbg|vbn|vbp|vbz|wdt|wp|wp$|wrb|[.]+|[,$?:;!()&%#=+{}*~.]+"#r"CC|CD|DT|EX|FW|IN|JJ|JJR|JJS|LS|MD|PDT|POS|PRP|PRP$|RB|RBR|RBS|RP|SYM|TO|UH|VB|VBD|VBG|VBN|VBP|VBZ|WDT|WP|WP$|WRB"#NN|NNS|NNP|NNPS|
-# TAGS OF THE TREEBANK CORPUS
-#1.     CC     Coordinating conjunction
-#2.     CD     Cardinal number
-#3.     DT     Determiner
-#4.     EX     Existential there
-#5.     FW     Foreign word
-#6.     IN     Preposition or subordinating conjunction
-#7.     JJ     Adjective
-#8.     JJR     Adjective, comparative
-#9.     JJS     Adjective, superlative
-#10.     LS     List item marker
-#11.     MD     Modal
-#12.     NN     Noun, singular or mass
-#13.     NNS     Noun, plural
-#14.     NNP     Proper noun, singular
-#15.     NNPS     Proper noun, plural
-#16.     PDT     Predeterminer
-#17.     POS     Possessive ending
-#18.     PRP     Personal pronoun
-#19.     PRP$     Possessive pronoun
-#20.     RB     Adverb
-#21.     RBR     Adverb, comparative
-#22.     RBS     Adverb, superlative
-#23.     RP     Particle
-#24.     SYM     Symbol
-#25.     TO     to
-#26.     UH     Interjection
-#27.     VB     Verb, base form
-#28.     VBD     Verb, past tense
-#29.     VBG     Verb, gerund or present participle
-#30.     VBN     Verb, past participle
-#31.     VBP     Verb, non-3rd person singular present
-#32.     VBZ     Verb, 3rd person singular present
-#33.     WDT     Wh-determiner
-#34.     WP     Wh-pronoun
-#35.     WP$     Possessive wh-pronoun
-#36.     WRB     Wh-adverb
-#===============================================================================
-
-
-
-# Regular Expression for URL validation
-#
-# Author: Diego Perini
-# Updated: 2010/12/05
-#
-# the regular expression composed & commented
-# could be easily tweaked for RFC compliance,
-# it was expressly modified to fit & satisfy
-# these test for an URL shortener:
-#
-#   http://mathiasbynens.be/demo/url-regex
-#
-# Notes on possible differences from a standard/generic validation:
-#
-# - utf-8 char class take in consideration the full Unicode range
-# - TLDs have been made mandatory so single names like "localhost" fails
-# - protocols have been restricted to ftp, http and https only as requested
-#
-# Changes:
-#
-# - IP address dotted notation validation, range: 1.0.0.0 - 223.255.255.255
-#   first and last IP address of each class is considered invalid
-#   (since they are broadcast/network addresses)
-#
-# - Added exclusion of private, reserved and/or local networks ranges
-#
-# Compressed one-line versions:
-#
-# Javascript version
-#
-# /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i
-#
-# PHP version
-#
-# _^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:/[^\s]*)?$_iuS
-
-    URL =  ("" +
-            # protocol identifier
-            "(?:(?:https?|ftp)://)" +
-            # user:pass authentication
-            "(?:\\S+(?::\\S*)?@)?" +
-            "(?:" +
-            # IP address exclusion
-            # private & local networks
-            "(?!10(?:\\.\\d{1,3}){3})" +
-            "(?!127(?:\\.\\d{1,3}){3})" +
-            "(?!169\\.254(?:\\.\\d{1,3}){2})" +
-            "(?!192\\.168(?:\\.\\d{1,3}){2})" +
-            "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
-            # IP address dotted notation octets
-            # excludes loopback network 0.0.0.0
-            # excludes reserved space >= 224.0.0.0
-            # excludes network & broacast addresses
-            # (first & last IP address of each class)
-            "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
-            "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
-            "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
-            "|" +
-            # host name
-            "(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)" +
-            # domain name
-            "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*" +
-            # TLD identifier
-            "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
-            ")" +
-            # port number
-            "(?::\\d{2,5})?" +
-            # resource path
-            "(?:/[^\\s]*)?" +
-            "", "i" )[0];
-
-    EMOTION = r"""[<>]?[:;=8][\-o\*\']?[\)\]\(\[oOdDpP/\:\}\{@\|\\3\*]|[\)\]\(\[oOdDpP/\:\}\{@\|\\3\*][\-o\*\']?[:;=8][<>]?"""
-
-    TWITTER_USER = r"@[\w_]+"
-
-    TWITTER_HASHTAG = r"\#+[\w_]+[\w\'_\-]*[\w_]+"   
     
 
 if __name__ == "__main__":
