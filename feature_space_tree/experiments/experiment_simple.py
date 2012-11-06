@@ -243,9 +243,9 @@ def main_function():
     #===========================================================================
 
     print "arguments in: " + experiment_config_path
-    print "backed up in: " + global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1)
+    print "backed up in: " + global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('(.*/)?(.+\.yaml)', experiment_config_path).group(2)
     shutil.copyfile(experiment_config_path,
-                    global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('.*/(.*\.yaml)', experiment_config_path).group(1))
+                    global_kwargs_list['config_base']['experiment_base_path'] + '/' + re.match('(.*/)?(.+\.yaml)', experiment_config_path).group(2))
 
     t2 = time.time()
     print representations.Util.get_string_fancy_time(t2 - t1,

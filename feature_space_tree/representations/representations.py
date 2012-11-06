@@ -1,3 +1,6 @@
+#!/usr/local/bin/python
+# coding: utf-8
+
 # Copyright (C) 2011-2012 FeatureSpaceTree Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,6 +76,7 @@ class Util(object):
     def get_tuples_from_fdist(fdist):
         the_tuples = []
         for key in fdist.keys():
+            #print str(type(key)) + u":>>>" + key
             elem_tuple = (key, fdist[key])
             the_tuples += [elem_tuple]
 
@@ -103,8 +107,45 @@ class Util(object):
             if column >= n_columns:
                 fancy_list_string += "\n"
                 column = 0
+#            print i
+#            print type(i)
+#            print e
+#            print type(e)
+#            print e[0]
+#            print type(e[0])
+#            print e[1]
+#            print type(e[1])
             fancy_list_string += "%-4d %-35s " % (i, e)
             column += 1
+            i += 1
+
+        return fancy_list_string
+    
+    @staticmethod
+    def build_fancy_vocabulary(the_list):#, n_columns=3, enumerate=True):
+
+        fancy_list_string = ""
+        column = 0
+        i = 1
+        for e in the_list:
+#            if column >= n_columns:
+#                fancy_list_string += "\n"
+#                column = 0
+#            print i
+#            print type(i)
+#            print e
+#            print type(e)
+#            print e[0]
+#            print type(e[0])
+#            print e[1]
+#            print type(e[1])
+            #if enumerate:
+            #    fancy_list_string += "%-6d " % i
+        
+            #fancy_list_string += "%-25s %-15s" % (str(e[0]), str(e[1]))
+            #fancy_list_string += e[0] + " " +  str(e[1]) + "\n"
+            fancy_list_string += str(e[1]) + " " +  e[0] + "\n"
+#            column += 1
             i += 1
 
         return fancy_list_string
@@ -478,7 +519,9 @@ class CorpusCategorized(Corpus):
         self.__docs = self._corpus.fileids(categories = self._categories)
 
         # DEBUG: Uncomment if you want to see the selected documents
+        # print "CORPUS_PATH: " + self._corpus_path
         # print "DOCUMENTS: " + str(self.__docs)
+        # print "CATEGORIES: " + str(self._categories)
 
     def get_docs(self):
         return self.__docs
@@ -715,6 +758,9 @@ class CorpusObject(object):
 
         self.build_corpus()
 
+    def build_corpus(self):
+        self.template_constructor.calc_corpus(self)
+        
     def build_filtered_corpus(self, categories, kwargs_corpus):
         if 'corpus_path' in kwargs_corpus and\
         'corpus_pattern' in kwargs_corpus and\
@@ -730,9 +776,6 @@ class CorpusObject(object):
 
         corpus = Util.decorate_corpus(corpus, kwargs_corpus['filters_corpus'])
         return corpus
-
-    def build_corpus(self):
-        self.template_constructor.calc_corpus(self)
 
 
 class EnumCommonTemplate(object):
@@ -810,12 +853,30 @@ class ConfigBaseAdvanced(object):
         self.__filtered_train_corpus = self.corpus_object.filtered_train_corpus
 
         self.__filtered_test_corpus = self.corpus_object.filtered_test_corpus
+        
+        # ======================================================================
+        # the next two objects are the raw corpus!!!, it means that if you get
+        # the documents or categories from this objects,...then ALL 
+        # the documents will be returned. This means, that all the filters is 
+        # not working on this objects.
+        
+        # This objects, are necesaries because in fact whe get all the things as objects, 
+        # (files, categories, etc) from this objects (train_corpus and test corpus), but
+        # since all the resources are returned, whe constantly filter things, using
+        # le lists  self.corpus_file_list_train, and the self.categories. Which
+        # are in fact the thing selected by the users!!!.
 
         self.train_corpus = self.__filtered_train_corpus.get_corpus()
         self.test_corpus = self.__filtered_test_corpus.get_corpus()
+        # ======================================================================
+        
+        # ======================================================================        
+        # The following lists help us to filter all the stuff returned by the
+        # train_corpus and test_corpus objects.
 
         self.corpus_file_list_train = self.__filtered_train_corpus.get_docs()
         self.corpus_file_list_test = self.__filtered_test_corpus.get_docs()
+        # ======================================================================
 
         Util.create_a_dir(self.experiment_base_path)
         Util.create_a_dir(self.experiment_base_path + "/" + self.experiment_name)
@@ -983,6 +1044,8 @@ class MatrixHolder(object):
 
     def __init__(self):
         self._matrix = None
+        self._instance_categories = None
+        self._instance_namefiles = None
 
     @abstractmethod
     def build_matrix(self):
@@ -994,6 +1057,14 @@ class MatrixHolder(object):
 
     @abstractmethod
     def get_matrix(self):
+        pass
+    
+    @abstractmethod
+    def get_instance_categories(self):
+        pass
+    
+    @abstractmethod
+    def get_instance_namefiles(self):
         pass
 
 
@@ -1024,6 +1095,9 @@ class CSAMatrixHolder(MatrixHolder):
 
         matrix_concepts_docs = numpy.zeros((len(space.categories), len(corpus_file_list)),
                                            dtype=numpy.float64)
+        
+        instance_categories = []
+        instance_namefiles = []
 
         k=0
         for author in space.categories:
@@ -1054,8 +1128,13 @@ class CSAMatrixHolder(MatrixHolder):
                     num_term += 1
 
                 k+=1 # contador de documentos
+                
+                instance_categories += [author]
+                instance_namefiles += [arch]
 
         self._matrix = matrix_concepts_docs
+        self._instance_categories = instance_categories
+        self._instance_namefiles = instance_namefiles
 
         t2 = time.time()
         print str(t2-t1) + " CSA segunda parte"
@@ -1216,6 +1295,12 @@ class CSATrainMatrixHolder(CSAMatrixHolder):
 
     def get_matrix(self):
         return self._matrix.transpose()
+    
+    def get_instance_categories(self):
+        return self._instance_categories
+    
+    def get_instance_namefiles(self):
+        return self._instance_namefiles
 
 
 class CSATestMatrixHolder(CSAMatrixHolder):
@@ -1236,6 +1321,12 @@ class CSATestMatrixHolder(CSAMatrixHolder):
 
     def get_matrix(self):
         return self._matrix.transpose()
+    
+    def get_instance_categories(self):
+        return self._instance_categories
+    
+    def get_instance_namefiles(self):
+        return self._instance_namefiles
 
 
 class BOWMatrixHolder(MatrixHolder):
@@ -1255,7 +1346,10 @@ class BOWMatrixHolder(MatrixHolder):
 
         matrix_docs_terms = numpy.zeros((len(corpus_file_list), len(space._vocabulary)),
                                         dtype=numpy.float64)
-        i = 0
+        instance_categories = []
+        instance_namefiles = []
+        
+        i = 0      
 
         for autor in space.categories:
             archivos = virtual_classes_holder[autor].cat_file_list
@@ -1266,13 +1360,16 @@ class BOWMatrixHolder(MatrixHolder):
 
                 j = 0
                 for pal in space._vocabulary:
-                    if pal in docActualFd:
+                        
+                    if (pal in docActualFd) and tamDoc > 0:
                         #print str(freq) + " antes"
-                        freq = docActualFd[pal] / float(1.0 + tamDoc) #math.log((1 + docActual.diccionario[pal] / float(docActual.tamDoc)), 10) / math.log(1+float(docActual.tamDoc),10)
+                        freq = docActualFd[pal] / float(tamDoc) #math.log((1 + docActual.diccionario[pal] / float(docActual.tamDoc)), 10) / math.log(1+float(docActual.tamDoc),10)
 #                        freq = math.log((1 + diccionario[pal] / (2*float(tamDoc))), 2)
 #                        freq = math.log((1 + docActual.diccionario[pal] / (float(docActual.tamDoc))), 2)
                         #print str(freq) + " despues"
                         # freq=1.0
+                        #if pal == "xico":
+                        #    print pal +"where found in: "  +arch
                     else:
                         freq = 0
 #                    terminos[j] += freq
@@ -1281,8 +1378,13 @@ class BOWMatrixHolder(MatrixHolder):
                     j += 1
 
                 i+=1
+                
+                instance_categories += [autor]
+                instance_namefiles += [arch]
 
         self._matrix = matrix_docs_terms
+        self._instance_categories = instance_categories
+        self._instance_namefiles = instance_namefiles
 
         #print matConceptosTerm
 
@@ -1304,6 +1406,12 @@ class BOWTrainMatrixHolder(BOWMatrixHolder):
 
     def get_matrix(self):
         return self._matrix
+    
+    def get_instance_categories(self):
+        return self._instance_categories
+    
+    def get_instance_namefiles(self):
+        return self._instance_namefiles
 
 
 class BOWTestMatrixHolder(BOWMatrixHolder):
@@ -1321,6 +1429,12 @@ class BOWTestMatrixHolder(BOWMatrixHolder):
 
     def get_matrix(self):
         return self._matrix
+    
+    def get_instance_categories(self):
+        return self._instance_categories
+    
+    def get_instance_namefiles(self):
+        return self._instance_namefiles
 
 
 class LSIMatrixHolder(MatrixHolder):
@@ -1416,6 +1530,12 @@ class LSITrainMatrixHolder(LSIMatrixHolder):
 
     def get_matrix(self):
         return self._matrix
+    
+    def get_instance_categories(self):
+        return self._instance_categories
+    
+    def get_instance_namefiles(self):
+        return self._instance_namefiles
 
 
 class LSITestMatrixHolder(BOWMatrixHolder):
@@ -1442,6 +1562,12 @@ class LSITestMatrixHolder(BOWMatrixHolder):
 
     def get_matrix(self):
         return self._matrix
+    
+    def get_instance_categories(self):
+        return self._instance_categories
+    
+    def get_instance_namefiles(self):
+        return self._instance_namefiles
 
 
 class Report(object):
@@ -1461,7 +1587,7 @@ class Report(object):
 
         iterator = root.create_iterator()
 
-        self.fancy_print_space(root)
+        self.fancy_print_space(root, is_root=True)
 
         self.f_config_java_classifier = \
         open("%s/config_java_classifier_%s.txt" % (root.space_path, self.experiment_name), 'w')
@@ -1500,9 +1626,12 @@ class Report(object):
 #
 #            i += 1
 
-    def fancy_print_space(self, space):
+    def fancy_print_space(self, space, is_root=False):
         self.general_report(space)
-        self.create_arrfs(space)
+        
+        if is_root:
+            self.create_arrfs(space)
+            
         self.create_properties_files(space)
 
         if space.is_leaf():
@@ -1522,8 +1651,8 @@ class Report(object):
         f_config.write("Categories: %s\n" % str(space.categories))
         f_config.write("Train_corpus_config: %s\n" % str(space.train_corpus))
         f_config.write("Test_corpus_config: %s\n" % str(space.test_corpus))
-        f_config.write("corpus_file_list_train: \n%s\n\n" % Util.build_fancy_list_string(space.corpus_file_list_train))
-        f_config.write("corpus_file_list_test: \n%s\n\n" % Util.build_fancy_list_string(space.corpus_file_list_test))
+        f_config.write("corpus_file_list_train: \n%s\n\n" % Util.build_fancy_list_string(space.get_train_files()))
+        f_config.write("corpus_file_list_test: \n%s\n\n" % Util.build_fancy_list_string(space.get_test_files()))
 
         f_config.close()
 
@@ -1543,12 +1672,37 @@ class Report(object):
                         space.get_test_files())
 
     def create_properties_files(self, space):
+        
+        f_vocabulary_1 = open("%s/vocabulary_subspace%s_%s.txt" % (space.space_path, space.id_space, self.experiment_name), 'w')
 
-        f_vocabulary = open("%s/vocabulary_subspace%s_%s.txt" % (space.space_path, space.id_space, self.experiment_name), 'w')
+        vocabulary_tuples_1 = Util.get_tuples_from_fdist(space.get_fdist())            
 
-        vocabulary_tuples = Util.get_tuples_from_fdist(space.get_fdist())
+        str_vocabulary_1 = Util.build_fancy_list_string(vocabulary_tuples_1)
+        #print type(str_vocabulary)
+        #str_vocabulary = u'' + str_vocabulary
+        #print type(str_vocabulary)
+        f_vocabulary_1.write(str_vocabulary_1)
+        f_vocabulary_1.close()
+        
+        
 
-        str_vocabulary = Util.build_fancy_list_string(vocabulary_tuples)
+        f_vocabulary = open("%s/vocabulary_subspace_Simple%s_%s.txt" % (space.space_path, space.id_space, self.experiment_name), 'w')
+
+        vocabulary_tuples_temp = Util.get_tuples_from_fdist(space.get_fdist())        
+        
+        vocabulary_tuples = []
+        for v_tuple in vocabulary_tuples_temp:
+            element = v_tuple[0]
+            number = v_tuple[1]
+            print element.encode('utf-8')
+            print type(element)
+            vocabulary_tuples +=[(element.encode('utf-8'), number)]
+            
+
+        str_vocabulary = Util.build_fancy_vocabulary(vocabulary_tuples)
+        #print type(str_vocabulary)
+        #str_vocabulary = u'' + str_vocabulary
+        #print type(str_vocabulary)
         f_vocabulary.write(str_vocabulary)
         f_vocabulary.close()
 
@@ -1556,12 +1710,14 @@ class Report(object):
         self.create_details(space.space_path,
                             space.id_space,
                             self.experiment_name,
-                            space.get_virtual_classes_holder_train())
+                            space.get_virtual_classes_holder_train(),
+                            "train")
 
         self.create_details(space.space_path,
                             space.id_space,
                             self.experiment_name,
-                            space.get_virtual_classes_holder_test())
+                            space.get_virtual_classes_holder_test(),
+                            "test")
 
 
         self.b += len(space.get_attributes())
@@ -1572,8 +1728,8 @@ class Report(object):
         self.a += len(space.get_attributes())
 
 
-    def create_details(self, space_path, id_space, experiment_name, virtual_classes_holder):
-        f_details = open("%s/details_subspace%s_%s.txt" % (space_path, id_space, experiment_name), 'w')
+    def create_details(self, space_path, id_space, experiment_name, virtual_classes_holder, which_dataset):
+        f_details = open("%s/details_subspace%s_%s_%s.txt" % (space_path, id_space, experiment_name, which_dataset), 'w')
 
         virtual_categories = virtual_classes_holder
 
@@ -2012,10 +2168,62 @@ class SpaceComposite(SpaceComponent):
         return matrix_test
 
     def get_train_files(self):
-        return self.corpus_file_list_train
+        train_instance_namefiles = None
+
+        for space_component in self.space_components:
+            if (train_instance_namefiles == None):
+                train_instance_namefiles = space_component.get_train_files()
+            else:
+                
+                flag_identical = True
+                
+                if len(train_instance_namefiles) == len(space_component.get_train_files()):
+                    flag_identical = False
+                    
+                for a, b in zip (train_instance_namefiles, space_component.get_train_files()):
+                    if a != b:
+                        flag_identical = False
+                        break
+                    
+                if flag_identical:
+                    train_instance_namefiles = space_component.get_train_files()
+                else:
+                    raise NonIdenticalInstancesOfSubspacesError\
+                        ("The subspaces file lists are non identical!!!:" +
+                         " please check the length or elements.")
+
+        return train_instance_namefiles
+        
+        #return self.corpus_file_list_train
 
     def get_test_files(self):
-        return self.corpus_file_list_test
+        test_instance_namefiles = None
+
+        for space_component in self.space_components:
+            if (test_instance_namefiles == None):
+                test_instance_namefiles = space_component.get_test_files()
+            else:
+                
+                flag_identical = True
+                
+                if len(test_instance_namefiles) == len(space_component.get_test_files()):
+                    flag_identical = False
+                    
+                for a, b in zip (test_instance_namefiles, space_component.get_test_files()):
+                    if a != b:
+                        flag_identical = False
+                        break
+                    
+                if flag_identical:
+                    test_instance_namefiles = space_component.get_test_files()
+                else:
+                    raise NonIdenticalInstancesOfSubspacesError\
+                        ("The subspaces file lists are non identical!!!:" +
+                         " please check the length or elements.")
+
+        return test_instance_namefiles
+        
+        #return self.corpus_file_list_test
 
     def get_tokens(self):
         pass
@@ -2117,10 +2325,12 @@ class SpaceItem(SpaceComponent):
         return self.matrix_test_holder.get_matrix()
 
     def get_train_files(self):
-        return self.corpus_file_list_train
+        return self.matrix_train_holder.get_instance_namefiles()
+        #return self.corpus_file_list_train
 
     def get_test_files(self):
-        return self.corpus_file_list_test
+        return self.matrix_test_holder.get_instance_namefiles()
+        #return self.corpus_file_list_test
 
     def get_tokens(self):
         pass
@@ -2179,6 +2389,15 @@ class NullIterator(object):
 
 
 class UnsupportedOperationError(Exception):
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return repr(self.msg)
+    
+    
+class NonIdenticalInstancesOfSubspacesError(Exception):
 
     def __init__(self, msg):
         self.msg = msg

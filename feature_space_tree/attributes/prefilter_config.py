@@ -98,7 +98,7 @@ class FactorySimpleDecoratorRawStringNormalizer(object):
                                                           (False, True)['to_lower' in kwargs])
         
         elif option == EnumDecoratorRawStringNormalizer.REPLACE_REGEXP:
-            regexp = Util.get_the_regexp(kwargs)
+            regexp = attr_util.Util.get_the_regexp(kwargs)
             return ReplaceRegExpDecoratorRawStringNormalizer(raw_string_normalizer,
                                                              regexp,
                                                              kwargs['replacement'])
