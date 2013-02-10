@@ -641,7 +641,7 @@ class VirtualCategoriesHolder(object):
     def __init__(self, categories, corpus, kwargs_terms, vocabulary,
                  corpus_file_list):
 
-        # this is a dictionary tha will contain all posible information about
+        # this is a dictionary that will contain all posible information about
         # each category.
         self.virtual_categories = {}
         # ----------------------------------------------------------------------
@@ -1362,11 +1362,11 @@ class BOWMatrixHolder(MatrixHolder):
                         
                     if (pal in docActualFd) and tamDoc > 0:
                         #print str(freq) + " antes"
-                        # freq = docActualFd[pal] / float(tamDoc) #math.log((1 + docActual.diccionario[pal] / float(docActual.tamDoc)), 10) / math.log(1+float(docActual.tamDoc),10)
+                        freq = docActualFd[pal] / float(tamDoc) #math.log((1 + docActual.diccionario[pal] / float(docActual.tamDoc)), 10) / math.log(1+float(docActual.tamDoc),10)
 #                        freq = math.log((1 + diccionario[pal] / (2*float(tamDoc))), 2)
 #                        freq = math.log((1 + docActual.diccionario[pal] / (float(docActual.tamDoc))), 2)
                         #print str(freq) + " despues"
-                        freq=1.0
+                        # freq=1.0
                         #if pal == "xico":
                         #    print pal +"where found in: "  +arch
                     else:
@@ -1901,6 +1901,10 @@ class SpaceComponent(object):
         self.processing_option = processing_option
 
         factory_simple_terms_processing = virtuals.FactorySimpleTermsProcessing()
+        
+        # FIXME: factory_processing is an Abstract_Factory, maybe we have to
+        # consider changing the name of the class in order to reflect this.
+        # For instance, FactoryVirtuals.
         self.factory_processing = factory_simple_terms_processing.build(self.processing_option)
 
     def set_virtual_elements(self, value):
@@ -1913,6 +1917,17 @@ class SpaceComponent(object):
         return self.virtual_classes_holder_test
 
     def create_space_properties(self):
+        
+        # ==================================================================
+        # In the following lines we just use self.kwargs_space['terms'], cuz
+        # they contain the especifications (obvioulsly  it will extract all from
+        # the TRAINING CORPUS). This is because this is the corpus on which in 
+        # classification task we are just allow to see. 
+        # ==================================================================
+        
+        # VirtualElements (VirtualTerms or VirtualVocabulary) stores the
+        # state (fdist, vocabulary,...and kwargs_specific that tell us
+        # how the Vocabulary or Terms wered filtered.
 
         if (self.root == None):
             # ==================================================================
@@ -1967,6 +1982,10 @@ class SpaceComponent(object):
 
             else:
 
+                # VirtualElements (VirtualTerms or VirtualVocabulary) stores the
+                # state (fdist, vocabulary,...and kwargs_specific that tell us
+                # how the Vocabulary or Terms wered filtered.
+                 
                 # ==============================================================
                 # This is not the root,CreateSpace but it gives specific definition of how
                 # the terms will be filtered.
@@ -1974,7 +1993,11 @@ class SpaceComponent(object):
                 i = 0
                 for kwargs_term in self.kwargs_space['terms']:
 
-                    # filter in a specific way
+                    # POINT_1 --------------------------------------------------
+                    # Save the filter of the YAML in this node, because it could be
+                    # true that we want terms in the parent node, BUT we don't want
+                    # the same way to filter !!!!
+                    # ----------------------------------------------------------
                     if 'filters_terms' in kwargs_term:
                         filters_terms = kwargs_term['filters_terms']
 
@@ -1983,7 +2006,15 @@ class SpaceComponent(object):
                         if (virtual_element.id_term == kwargs_term['id_term']):
                             self.kwargs_space['terms'][i] = virtual_element.kwargs_term
 
-                            # filter in a specific way
+                            # POINT_2 ------------------------------------------
+                            # Filter in a specific way (per very term)
+                            # This part OVERRIDES filters of the parent. Check
+                            # how in the above line a identical copy of the
+                            # terms specification is made on this node:
+                            # "self.kwargs_space['terms'][i] = virtual_element.kwargs_term"
+                            # However we don't want to filter vocabulary in the same way as
+                            # the parent did. So, we override the value loaded in the
+                            # POINT_1.
                             if 'filters_terms' in kwargs_term:
                                 self.kwargs_space['terms'][i]['filters_terms'] = filters_terms
 
@@ -2176,12 +2207,14 @@ class SpaceComposite(SpaceComponent):
                 
                 flag_identical = True
                 
-                if len(train_instance_namefiles) == len(space_component.get_train_files()):
+                if len(train_instance_namefiles) != len(space_component.get_train_files()):
                     flag_identical = False
+                    print "The Size is different!!!: ", len(train_instance_namefiles), " VS ", len(space_component.get_train_files())  
                     
                 for a, b in zip (train_instance_namefiles, space_component.get_train_files()):
                     if a != b:
                         flag_identical = False
+                        print "Elements are not the same!!!: ", a, " VS ", b
                         break
                     
                 if flag_identical:
@@ -2205,12 +2238,14 @@ class SpaceComposite(SpaceComponent):
                 
                 flag_identical = True
                 
-                if len(test_instance_namefiles) == len(space_component.get_test_files()):
+                if len(test_instance_namefiles) != len(space_component.get_test_files()):
                     flag_identical = False
+                    print "The Size is different!!!: ", len(test_instance_namefiles), " VS ", len(space_component.get_test_files())
                     
                 for a, b in zip (test_instance_namefiles, space_component.get_test_files()):
                     if a != b:
                         flag_identical = False
+                        print "Elements are not the same!!!: ", a, " VS ", b
                         break
                     
                 if flag_identical:

@@ -48,6 +48,7 @@ import yaml
 import sys
 import shutil
 import re
+
 #print sys.path
 
 from ..representations import representations
@@ -229,8 +230,8 @@ def main_function():
         print "================================================\n\n"
     #===========================================================================
 
-    #corpora = representations.Corpora(config_base.experiment_base_path)
-    #corpora.generate()
+    corpora = representations.Corpora(config_base.experiment_base_path)
+    corpora.generate()
 
     #===========================================================================
     # Writes a general report
@@ -251,21 +252,8 @@ def main_function():
     print representations.Util.get_string_fancy_time(t2 - t1,
                                                      'End of the principal script')
 
+    
+
 #if __name__ == '__main__':
 
-#    main_function()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    #main_function()

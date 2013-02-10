@@ -38,6 +38,14 @@ from ..attributes.attr_config import FactoryTermLex
 from ..attributes.filters_terms_config import FactorySimpleFilterVocabulary, FactorySimpleFilterTermsList
 from ..attributes.filters_terms import TermsListRaw, VocabularyRaw
 
+# ------------------------------------------------------------------------------
+# The REALLY important classes here are all that contains the name vocabulary. This
+# is since they are used when the PROPROCESSING_OPTION is set to SIMPLE, this
+# means that we will process the terms as SETs and as Dictionaries (nltk FDIST).
+# The option FULL we would have FILTER the tokens just as they are retrieved
+# so, the preprocessing is slower. 
+# ------------------------------------------------------------------------------
+
 class Util(object):
 
     @staticmethod
@@ -151,7 +159,8 @@ class VocabularyVirtualProcessor(VirtualProcessor):
         # ======================================================================
 
         # ======================================================================
-        # This block computes the fdist of all of the virtual_elements
+        # This block computes the fdist of all of the virtual_elements and 
+        # creates a new one that includes all.
         # ======================================================================
         fdist = nltk.FreqDist()
         for virtual_vocabulary in self.virtual_elements:

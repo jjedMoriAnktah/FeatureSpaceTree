@@ -56,5 +56,6 @@ setup(name='FeatureSpaceTree',
       entry_points="""
       [console_scripts]
       simple_exp = feature_space_tree.experiments.experiment_simple:main_function
+      advanced_exp = feature_space_tree.experiments.experiment_advanced:main_function
       """
       )

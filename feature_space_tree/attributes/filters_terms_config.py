@@ -27,6 +27,13 @@
 #  * The LICENSE.TXT included in the project dir
 # ==============================================================================
 
+# ------------------------------------------------------------------------------
+# The REALLY important classes here are all that contains the name vocabulary. This
+# is since they are used when the PROPROCESSING_OPTION is set to SIMPLE, this
+# means that we will process the terms as SETs and as Dictionaries (nltk FDIST).
+# The option FULL we would have FILTER the tokens just as they are retrieved
+# so, the preprocessing is slower. 
+# ------------------------------------------------------------------------------
 
 from abc import ABCMeta, abstractmethod
 from filters_terms import *
