@@ -37,6 +37,20 @@ representation). and the better is, ...
 Without programming a single line of code!!! ... obviously you can also use the
 API inside your own code :-)
 
+INSTALLATION
+============
+You will need the pip software (also needed to install NLTK) in order to install
+FeatureSpaceTree. 
+
+Type into a terminal the following command:
+
+$ sudo pip install -e git+https://github.com/beiceman/FeatureSpaceTree.git#egg=FeatureSpaceTree
+
+If no errors, then congratulations you can use FeatureSpaceTree:
+
+$ simple_exp yaml_file_with_parameters.yaml
+
+
 INTRODUCTION
 ============
 
@@ -86,9 +100,96 @@ Initially SpaceTree works through the command line interface. It runs the main s
 parameters are provided through a YAML file (thanks to this, also would be easy to develop
 a GUI that only treat YAML files).
 
-~ $ python experiment_simple.py /somewhere/my_parameters.yaml /somewhere/resuts_directory
+$ simple_exp /somewhere/my_parameters.yaml 
 
 An example of a YAML file is:
+
+config_base:
+
+  categories: [cat1, cat2, cat3]
+  experiment_base_path: /home/aplm/Experimentos/validaciones/bow/exp_validacion
+  experiment_name: exp_validacion
+  processing_option: EnumTermsProcessing.SIMPLE
+
+  corpus:
+    type_corpus: EnumCommonTemplate.TRAIN_TEST
+
+    train_corpus:
+      corpus_path: /home/aplm/nltk_data/corpora/validacion/train
+      filters_corpus:
+      - type_filter_corpus: EnumFiltersCorpus.FULL
+    
+    test_corpus:
+      corpus_path: /home/aplm/nltk_data/corpora/validacion/test
+      filters_corpus:
+      - type_filter_corpus: EnumFiltersCorpus.FULL
+
+  # here there are parameters that can be loaded for your classification program.
+  # For example, the following parameters are needed for a java program based on weka.
+  # It means, perform 1 fold, with four classifiers into a voting scheme.
+  
+  java_args:
+    n_folds: 10
+    n_classifiers: 1
+    classifiers_options:
+    - classifier: SVM
+    ensemble: SINGLE
+    
+# Once the corpus is specified, you will tell to SpaceTree what you want to extract.
+# It is done through a tree scheme, where in the nodes you specify what attributes
+# are going to be extracted and filtered. An in the leafs you will specify How
+# those attributes will be represented.
+
+# ==========================================================================
+# root
+# ==========================================================================
+root:
+
+  terms:
+
+    # term
+  - type_term: EnumTermLex.REG_EXP
+    id_term: '1'
+    regexp: "[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+-*[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[.]+|[/,$?:;!()&%#=+{}*~.]+|[0-9]+"
+    string: ''
+    lazy: true
+    mode: 0
+    raw_string_normalizers: 
+    - {type_raw_string_normalizer: EnumDecoratorRawStringNormalizer.TO_LOWER}
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 20000}
+
+  filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 20000}
+
+
+  childs:
+  
+    # ==========================================================================
+    # subspace 1
+    # ==========================================================================
+  - representation: EnumRepresentation.BOW
+    terms:
+      # term
+    - id_term: "1"
+      filters_terms:
+      - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 20000}
+
+    # space filters terms
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 20000}
+
+
+    childs: []
+    # ========================================================================== 
+    
+    
+
+################################################################################
+
+
+
+Another example could be:
 
 config_base:
 
