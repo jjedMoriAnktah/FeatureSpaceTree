@@ -44,7 +44,7 @@ FeatureSpaceTree.
 
 Type into a terminal the following command:
 
-$ sudo pip install -e git+https://github.com/beiceman/FeatureSpaceTree.git#egg=FeatureSpaceTree
+$ sudo pip install git+https://github.com/beiceman/FeatureSpaceTree.git#egg=FeatureSpaceTree
 
 If no errors, then congratulations you can use FeatureSpaceTree:
 
