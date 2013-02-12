@@ -46,6 +46,185 @@ from ..attributes.filters_terms import TermsListRaw, VocabularyRaw
 # so, the preprocessing is slower. 
 # ------------------------------------------------------------------------------
 
+# ##############################################################################
+#
+#                 +--------------------+
+#                 |   VirtualElement   |
+#                 |--------------------|
+#                 | id_term            |
+#                 | kwargs_term        |
+#                 | fdist              |
+#                 | vocabulary         |
+#                 |--------------------|
+#                 | __init__           |
+#                 +--------------------+
+#                      .          .
+#                     /_\        /_\
+#                      |          |
+#                      |          |
+#           |...........          ........
+#           |                            |
+#  +--------------------+       +--------------------+
+#  | VirtualVocabulary  |       |    VirtualTerm     |
+#  |--------------------|       |--------------------|
+#  | string_description |       | string_description |  ---->  [ nltk.FreqDist ]
+#  | fdist              |       | tokens             |
+#  | vocabulary         |       | fdist              |
+#  |--------------------|       | vocabulary         |
+#  | __init__           |       |--------------------|
+#  +--------------------+       | __init__           |
+#                               +--------------------+
+#
+#
+#
+#
+#                        +------------------------+
+#                        | FactoryTermsProcessing |
+#                        |------------------------|
+#                        | __metaclass__          |
+#                        |------------------------|
+#                        | build                  |
+#                        | create                 |
+#                        +------------------------+
+#                                   .
+#                                  /_\
+#                                   |
+#                                   |
+#                    +------------------------------+
+#                    | FactorySimpleTermsProcessing |
+#                    |------------------------------|
+#                    | create                       |
+#                    +------------------------------+
+#                                   .
+#                                  /|\
+#                                   |
+#                                   |
+#                   +---------------'-----------------+
+#                   |    AbstractFactoryProcessing    |
+#                   |---------------------------------|
+#                   | build_virtual_processor         |
+#                   | build_virtual_re_processor      |
+#                   | build_virtual_global_processor  |
+#                   | create_virtual_processor        |
+#                   | create_virtual_re_processor     |
+#                   | create_virtual_global_processor |
+#                   +---------------------------------+
+#                          .                     .
+#                         /_\                   /_\
+#                          |                     |
+#                  .........                     .............
+#                  |                                         |
+#                  |                                         |
+#                  '                                         |
+#  +---------------------------------+       +---------------------------------+
+#  |     SimpleFactoryProcessing     |       |      FullFactoryProcessing      |
+#  |---------------------------------|       |---------------------------------|
+#  | create_virtual_processor        |       | create_virtual_processor        |
+#  | create_virtual_re_processor     |       | create_virtual_re_processor     |
+#  | create_virtual_global_processor |       | create_virtual_global_processor |
+#  +---------------------------------+       +---------------------------------+
+#
+#
+#
+#
+#
+#
+#
+#
+#                         +-------------------+
+#                         |  VirtualProcessor |
+#                         |-------------------|
+#                         | _factory_term_lex |  ---->  [ FactoryTermLex ]
+#                         | virtual_elements  |
+#                         | fdist             |
+#                         | vocabulary        |
+#                         |-------------------|
+#                         | __init__          |
+#                         +-------------------+
+#                          .                .
+#                         /_\              /_\
+#                __________|                |_______
+#               |                                  |
+#  +----------------------------+       +-----------------------+
+#  | VocabularyVirtualProcessor |       | TermsVirtualProcessor |
+#  |----------------------------|       |-----------------------|
+#  | virtual_elements           |       | virtual_elements      |
+#  | fdist                      |       | tokens                |
+#  | vocabulary                 |       | fdist                 |
+#  |----------------------------|       | vocabulary            |
+#  | __init__                   |       |-----------------------|
+#  +----------------------------+       | __init__              |
+#                                       +-----------------------+
+#
+#
+#
+#
+#
+#
+#
+#
+#                                +-----------------------+
+#                                |   VirtualReProcessor  |
+#                                |-----------------------|
+#                                | kwargs_terms_refilter |
+#                                | new_virtual_elements  |
+#                                | fdist                 |
+#                                | vocabulary            |
+#                                |-----------------------|
+#                                | __init__              |
+#                                +-----------------------+
+#                                        .        .
+#                                       /_\      /_\
+#                ________________________|        |___________________
+#                |                                                   |
+# +-------------------------------+                 +------------------------------------+
+# | FilterTermsVirtualReProcessor |                 | FilterVocabularyVirtualReProcessor |
+# |-------------------------------|                 |------------------------------------|
+# | new_virtual_elements          |                 | new_virtual_elements               |
+# | tokens                        |                 | fdist                              |
+# | fdist                         |                 | vocabulary                         |
+# | vocabulary                    |                 |------------------------------------|
+# |-------------------------------|                 | __init__                           |
+# | __init__                      |                 +------------------------------------+
+# +-------------------------------+
+#
+#
+#
+#
+#
+#
+#                             +-----------------------------+
+#                             |    VirtualGlobalProcessor   |
+#                             |-----------------------------|
+#                             | virtual_elements            |
+#                             | global_kwargs_filters_terms |
+#                             | fdist                       |
+#                             | vocabulary                  |
+#                             |-----------------------------|
+#                             | __init__                    |
+#                             +-----------------------------+
+#                                      .             .
+#                                     /_\           /_\
+#                   ___________________|             ............
+#                  |                                            |
+# +-----------------------------------+      +----------------------------------------+
+# | FilterTermsVirtualGlobalProcessor |      | FilterVocabularyVirtualGlobalProcessor |
+# |-----------------------------------|      |----------------------------------------|
+# | all_tokens                        |      | all_fdist                              |
+# | all_fdist                         |      | all_vocabulary                         |
+# | all_vocabulary                    |      | fdist                                  |
+# | tokens                            |      | vocabulary                             |
+# | fdist                             |      |----------------------------------------|
+# | vocabulary                        |      | __init__                               |
+# |-----------------------------------|      +----------------------------------------+
+# | __init__                          |
+# +-----------------------------------+
+#
+#
+#
+#
+################################################################################
+
 class Util(object):
 
     @staticmethod

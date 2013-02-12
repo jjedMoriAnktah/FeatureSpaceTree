@@ -1,0 +1,97 @@
+config_base:
+
+  categories: [10s_female, 10s_male, 20s_female, 20s_male, 30s_female, 30s_male]
+  experiment_base_path: /home/aplm/Experimentos/PAN13/profiling/csa_multi/exp_profiling
+  experiment_name: exp_profiling
+  processing_option: EnumTermsProcessing.SIMPLE
+
+  corpus:
+    type_corpus: EnumCommonTemplate.TRAIN_TEST
+
+    train_corpus:
+      corpus_path: /home/aplm/nltk_data/corpora/PAN13/pan_author_profiling_training_data_processed/es/train
+      filters_corpus:
+      - type_filter_corpus: EnumFiltersCorpus.FULL
+    
+    test_corpus:
+      corpus_path: /home/aplm/nltk_data/corpora/PAN13/pan_author_profiling_training_data_processed/es/test
+      filters_corpus:
+      - type_filter_corpus: EnumFiltersCorpus.FULL
+
+  java_args:
+    n_folds: 10
+    n_classifiers: 1
+    classifiers_options:
+    - classifier: SVM
+    ensemble: SINGLE
+
+# ==========================================================================
+# root
+# ==========================================================================
+root:
+
+  terms:
+
+    # term
+  - type_term: EnumTermLex.REG_EXP
+    id_term: '1'
+    regexp: "[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+-*[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+" #"[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+-*[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[.]+|[/,$?:;!()&%#=+{}*~.]+|[0-9]+"
+    string: ''
+    lazy: true
+    mode: 0
+    raw_string_normalizers: 
+    - {type_raw_string_normalizer: EnumDecoratorRawStringNormalizer.TO_LOWER}
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 6000}
+
+    # term
+  - type_term: EnumTermLex.REG_EXP
+    id_term: '2'
+    regexp: "[.]+|[/,$?:;!()&%#=+{}*~.]+" #"[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+-*[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[.]+|[/,$?:;!()&%#=+{}*~.]+|[0-9]+"
+    string: ''
+    lazy: true
+    mode: 0
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 300}
+
+  filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 6300}
+
+
+  childs:
+  
+    # ==========================================================================
+    # subspace 1
+    # ==========================================================================
+  - representation: EnumRepresentation.CSA
+    terms:
+      # term
+    - id_term: "1"
+      filters_terms:
+      - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 6000}
+
+    # space filters terms
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 6000}
+
+
+    childs: []
+    # ==========================================================================
+    
+    # ==========================================================================
+    # subspace 2
+    # ==========================================================================
+  - representation: EnumRepresentation.CSA
+    terms:
+      # term
+    - id_term: "2"
+      filters_terms:
+      - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 300}
+
+    # space filters terms
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 300}
+
+
+    childs: []
+    # ==========================================================================  

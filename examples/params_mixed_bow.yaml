@@ -1,0 +1,84 @@
+config_base:
+
+  categories: [deportes, noticias, tecnologia]
+  experiment_base_path: /home/aplm/Experimentos/validaciones/multi_bow/exp_validacion
+  experiment_name: exp_validacion
+  processing_option: EnumTermsProcessing.SIMPLE
+
+  corpus:
+    type_corpus: EnumCommonTemplate.TRAIN_TEST
+
+    train_corpus:
+      corpus_path: /home/aplm/nltk_data/corpora/validacion/train
+      filters_corpus:
+      - type_filter_corpus: EnumFiltersCorpus.FULL
+    
+    test_corpus:
+      corpus_path: /home/aplm/nltk_data/corpora/validacion/test
+      filters_corpus:
+      - type_filter_corpus: EnumFiltersCorpus.FULL
+
+  java_args:
+    n_folds: 10
+    n_classifiers: 1
+    classifiers_options:
+    - classifier: SVM
+    ensemble: SINGLE
+
+# ==========================================================================
+# root
+# ==========================================================================
+root:
+
+  terms:
+
+    # term
+  - type_term: EnumTermLex.REG_EXP
+    id_term: '1'
+    regexp: "[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+-*[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[.]+|[/,$?:;!()&%#=+{}*~.]+|[0-9]+"
+    string: ''
+    lazy: true
+    mode: 0
+    raw_string_normalizers: 
+    - {type_raw_string_normalizer: EnumDecoratorRawStringNormalizer.TO_LOWER}
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 10}
+
+
+    # term
+  - type_term: EnumTermLex.BIGRAM
+    id_term: '2'
+    regexp: "[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+-*[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[a-zA-Z'ÁÉÍÓÚáéíóúñÑüÜ]+|[.]+|[/,$?:;!()&%#=+{}*~.]+|[0-9]+"
+    string: ''
+    lazy: true
+    mode: 0
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 10}
+
+  filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 20}
+
+
+  childs:
+  
+    # ==========================================================================
+    # subspace 1
+    # ==========================================================================
+  - representation: EnumRepresentation.BOW
+    terms:
+      # term
+    - id_term: "1"
+      filters_terms:
+      - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 10}
+
+    - id_term: "2"
+      filters_terms:
+      - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 10}
+
+    # space filters terms
+    filters_terms:
+    - {type_filter_terms: EnumFiltersTermsList.FIXED_TOP, fixed_top: 10}
+
+
+    childs: []
+    # ========================================================================== 
