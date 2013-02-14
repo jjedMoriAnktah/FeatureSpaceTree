@@ -64,7 +64,8 @@ class EnumDecoratorByTokenNormalizer(object):
      INVERSE_CONTAINS_SPECIFIC_FILTER,
      NEIGHBORING_BIGRAMS,
      ORIENTATION_NEIGHBORING_BIGRAMS,
-     NEIGHBORING_NO_ORDER_BIGRAMS) = range(8)
+     NEIGHBORING_NO_ORDER_BIGRAMS,
+     NEIGHBORING_NO_ORDER_TRIGRAMS) = range(9)
      
 
 class FactorySimpleDecoratorByTokenNormalizer(object):
@@ -96,4 +97,7 @@ class FactorySimpleDecoratorByTokenNormalizer(object):
         
         if option == EnumDecoratorByTokenNormalizer.NEIGHBORING_NO_ORDER_BIGRAMS:
             return NeighboringNoOrderBigramsFilterDecoratorByTokenNormalizer(by_token_normalizer)
+        
+        if option == EnumDecoratorByTokenNormalizer.NEIGHBORING_NO_ORDER_TRIGRAMS:
+            return NeighboringNoOrderTrigramsFilterDecoratorByTokenNormalizer(by_token_normalizer)
         
