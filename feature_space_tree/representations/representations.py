@@ -1362,11 +1362,12 @@ class BOWMatrixHolder(MatrixHolder):
                         
                     if (pal in docActualFd) and tamDoc > 0:
                         #print str(freq) + " antes"
-                        # freq = docActualFd[pal] / float(tamDoc) #math.log((1 + docActual.diccionario[pal] / float(docActual.tamDoc)), 10) / math.log(1+float(docActual.tamDoc),10)
+                        freq = docActualFd[pal] / float(tamDoc) #math.log((1 + docActual.diccionario[pal] / float(docActual.tamDoc)), 10) / math.log(1+float(docActual.tamDoc),10)
 #                        freq = math.log((1 + diccionario[pal] / (2*float(tamDoc))), 2)
 #                        freq = math.log((1 + docActual.diccionario[pal] / (float(docActual.tamDoc))), 2)
                         #print str(freq) + " despues"
-                        freq=1.0
+                        # uncomment the following line if you want a boolean weigh :)
+                        # freq=1.0
                         #if pal == "xico":
                         #    print pal +"where found in: "  +arch
                     else:
