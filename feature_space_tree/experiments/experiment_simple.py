@@ -229,8 +229,8 @@ def main_function():
         print "================================================\n\n"
     #===========================================================================
 
-    #corpora = representations.Corpora(config_base.experiment_base_path)
-    #corpora.generate()
+    corpora = representations.Corpora(config_base.experiment_base_path)
+    corpora.generate()
 
     #===========================================================================
     # Writes a general report
